@@ -239,3 +239,45 @@
     raf = requestAnimationFrame(loop);
   }
 })();
+
+/* ---------- Contact form ---------- */
+(function () {
+  var form = document.querySelector('#contact .form');
+  if (!form) return;
+  var btn = form.querySelector('button[type="submit"]');
+  var origHtml = btn.innerHTML;
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name    = form.querySelector('#f-name').value.trim();
+    var email   = form.querySelector('#f-email').value.trim();
+    var org     = form.querySelector('#f-org').value.trim();
+    var service = form.querySelector('#f-svc').value;
+    var message = form.querySelector('#f-msg').value.trim();
+
+    if (!name || !email || !message) {
+      btn.innerHTML = 'Please fill required fields';
+      setTimeout(function () { btn.innerHTML = origHtml; }, 3000);
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = 'Sending…';
+
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, email: email, org: org, service: service, message: message }),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        btn.innerHTML = data.ok ? '✓ Sent!' : 'Failed — Try Again';
+        if (data.ok) form.reset();
+        setTimeout(function () { btn.disabled = false; btn.innerHTML = origHtml; }, 3000);
+      })
+      .catch(function () {
+        btn.innerHTML = 'Failed — Try Again';
+        setTimeout(function () { btn.disabled = false; btn.innerHTML = origHtml; }, 3000);
+      });
+  });
+})();
