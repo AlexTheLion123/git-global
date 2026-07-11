@@ -14,9 +14,9 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: 'GIT Global Contact <onboarding@resend.dev>',
-      to: 'info@gitglobal.com',
+      to: 'alex@nextcodex.dev',
       subject: `New Enquiry from ${name}`,
       html: `
         <h2>New Contact Enquiry</h2>
@@ -28,6 +28,11 @@ module.exports = async function handler(req, res) {
         <p>${message.replace(/\n/g, '<br>')}</p>
       `,
     });
+
+    if (error || !data) {
+      console.error('Resend error:', error || new Error('Missing email response data'));
+      return res.status(500).json({ error: 'Failed to send email' });
+    }
 
     return res.status(200).json({ ok: true });
   } catch (err) {
