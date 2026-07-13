@@ -15,9 +15,10 @@ module.exports = async function handler(req, res) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'GIT Global Contact <onboarding@resend.dev>',
+      from: 'GIT Global Contact <contact@gitglobal.co.za>',
       to: 'info@gitglobal.co.za',
       subject: `New Enquiry from ${name}`,
+      replyTo: email,
       html: `
         <h2>New Contact Enquiry</h2>
         <p><strong>Name:</strong> ${name}</p>
